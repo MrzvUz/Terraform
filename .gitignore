@@ -5,6 +5,8 @@
 *.tfstate
 *.tfstate.*
 backend.tf
+*/.terraform.lock.hcl
+.terraform.lock.hcl
 # Crash log files
 crash.log
 
@@ -20,8 +22,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
-*.terraform.lock.hcl
-.terraform.lock.hcl
+
 
 # Include override files you do wish to add to version control using negated pattern
 #
