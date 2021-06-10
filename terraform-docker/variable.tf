@@ -1,3 +1,5 @@
+
+
 variable "ext_port" {
   type = list
 
@@ -16,8 +18,3 @@ variable "int_port" {
     error_message = "Internal port must be 1880."
   }
 }
-
-# variable "container_count" {
-#   type    = number
-#   default = 4
-# }
