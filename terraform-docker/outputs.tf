@@ -4,7 +4,7 @@ output "container_name" {
   description = "The Name of the Container"
 }
 
-output "ip_address_and_port" {
+output "ip_and_port" {
   # join function joines ip and port and prints out on the output dashboard.
   value       = [for i in docker_container.nodered_container[*] : join(" : ", [i.ip_address], i.ports[*]["external"])]
   description = "The IP address of the container"
