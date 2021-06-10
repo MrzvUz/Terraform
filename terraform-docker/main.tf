@@ -12,7 +12,7 @@ resource "docker_image" "nodered_image" {
 
 # This resources creates random strings which addes to suffix of our name using python join function.
 resource "random_string" "random" {
-  count   = 1
+  count   = 3
   length  = 4
   special = false
   upper   = false
@@ -21,7 +21,7 @@ resource "random_string" "random" {
 
 resource "docker_container" "nodered_container" {
   # Join functions is taking random variable from random resource and joins them adds random 4 suffixes to container name.
-  count = 1
+  count = 3
   name  = join("-", ["nodered", random_string.random[count.index].result])
   image = docker_image.nodered_image.latest
   ports {
