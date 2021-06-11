@@ -1,16 +1,27 @@
-
+variable "image" {
+  type        = map(any)
+  description = "Image for container."
+  default = {
+    dev  = "nodered/node-red:latest"
+    prod = "nodered/node-red:latest-minimal"
+  }
+}
 
 variable "ext_port" {
-  type = list
+  type = map(any)
 
   validation {
-    condition     = max(var.ext_port...) <= 65535 && min(var.ext_port...) > 0
+    condition     = max(var.ext_port["dev"]...) <= 65535 && min(var.ext_port["dev"]...) >= 1980
+    error_message = "External port must in the valid port range 0 - 65535."
+  }
+  validation {
+    condition     = max(var.ext_port["prod"]...) < 9180 && min(var.ext_port["prod"]...) >= 1880
     error_message = "External port must in the valid port range 0 - 65535."
   }
 }
 
 variable "int_port" {
-  type = number
+  type    = number
   default = 1880
 
   validation {
