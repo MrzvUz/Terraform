@@ -1,9 +1,3 @@
-resource "null_resource" "docker_vol" {
-  provisioner "local-exec" {
-    command = "mkdir nodered_vol/ || true && sudo chown -R 1000:1000 nodered_vol/"
-  }
-}
-
 module "image" {
   source   = "./image"
   image_in = var.image[terraform.workspace]
@@ -17,17 +11,14 @@ resource "random_string" "random" {
   upper   = false
 }
 
-resource "docker_container" "nodered_container" {
+module "container" {
+  source = "./container"
   # Join functions is taking random variable from random resource and joins them adds random 4 suffixes to container name.
-  count = local.container_count
-  name  = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
-  image = module.image.image_out
-  ports {
-    internal = var.int_port
-    external = var.ext_port[terraform.workspace][count.index]
-  }
-  volumes {
-    container_path = "/data"
-    host_path      = "${path.cwd}/nodered_vol"
-  }
+  count             = local.container_count
+  name_in           = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
+  image_in          = module.image.image_out
+  int_port_in       = var.int_port
+  ext_port_in       = var.ext_port[terraform.workspace][count.index]
+  container_path_in = "/data"
+  host_path_in      = "${path.cwd}/nodered_vol"
 }
