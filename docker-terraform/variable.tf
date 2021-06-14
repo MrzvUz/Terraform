@@ -10,14 +10,14 @@ variable "image" {
 variable "ext_port" {
   type = map(any)
 
-  validation {
-    condition     = max(var.ext_port["dev"]...) <= 65535 && min(var.ext_port["dev"]...) >= 1980
-    error_message = "External port must in the valid port range 0 - 65535."
-  }
-  validation {
-    condition     = max(var.ext_port["prod"]...) < 9180 && min(var.ext_port["prod"]...) >= 1880
-    error_message = "External port must in the valid port range 0 - 65535."
-  }
+  # validation {
+  #   condition     = max(var.ext_port["dev"]...) <= 65535 && min(var.ext_port["dev"]...) >= 1980
+  #   error_message = "External port must in the valid port range 0 - 65535."
+  # }
+  # validation {
+  #   condition     = max(var.ext_port["prod"]...) < 9180 && min(var.ext_port["prod"]...) >= 1880
+  #   error_message = "External port must in the valid port range 0 - 65535."
+  # }
 }
 
 variable "int_port" {

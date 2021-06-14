@@ -12,13 +12,13 @@ resource "aws_vpc" "my_vpc" {
   enable_dns_hostnames = true # Allows to assign dns hostname.
   enable_dns_support   = true # Allows to enable dns support.
 
-  # 3. Assign tag which is referencing from random_integer on top which assign random number at the end of my_vpc.
+  # Assign tag which is referencing from random_integer on top which assign random number at the end of my_vpc.
   tags = {
     Name = "my_vpc - ${random_integer.random.id}"
   }
 }
 
-# Randomly shuffles AZs and randomly assignes AZ to a subnet so we don't have to hard code. It also eliminates max count error of AZs.
+# 3. Randomly shuffles AZs and randomly assignes AZ to a subnet so we don't have to hard code. It also eliminates max count error of AZs.
 resource "random_shuffle" "az_list" {
   input        = data.aws_availability_zones.available.names
   result_count = var.max_subnets
@@ -39,6 +39,7 @@ resource "aws_subnet" "my_public_subnet" {
   }
 }
 
+# 05. Create subnet resource in a vpc.
 resource "aws_subnet" "my_private_subnet" {
   cidr_block              = var.private_cidrs[count.index]
   count                   = var.private_sn_count
@@ -50,3 +51,45 @@ resource "aws_subnet" "my_private_subnet" {
     Name = "my_private_subnet${count.index + 1}"
   }
 }
+
+# 06. Create IGW and associate route tables with IGW.
+resource "aws_internet_gateway" "my_internet_gateway" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  tags = {
+    Name = "my_igw"
+  }
+}
+
+# 07. Create route table and associate with IGW.
+resource "aws_route_table" "my_public_route_table" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  tags = {
+    Name = "my_public_rt"
+  }
+}
+
+# Create RT association to connect to the each public subnets.
+resource "aws_route_table_association" "my_public_association" {
+  count          = var.public_sn_count
+  subnet_id      = aws_subnet.my_public_subnet.*.id[count.index]
+  route_table_id = aws_route_table.my_public_route_table.id
+}
+
+# 08. Create default route table.
+resource "aws_route" "default_route" {
+  route_table_id         = aws_route_table.my_public_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.my_internet_gateway.id
+}
+
+# 09. Create default private route table and associate it with default_route so if no RT specified by default RT will assign to Private RT for security.
+resource "aws_default_route_table" "my_private_route_table" {
+  default_route_table_id = aws_vpc.my_vpc.default_route_table_id
+
+  tags = {
+    Name = "my_private_rt"
+  }
+}
+
