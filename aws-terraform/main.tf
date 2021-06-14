@@ -7,6 +7,7 @@ locals {
 module "networking" {               # referencing to ./networking/main.tf
   source           = "./networking" # pulling the info source from module file in ./terworking/main.tf
   vpc_cidr         = local.vpc_cidr # cidr_block is referencing to module file in ./terworking/main.tf my_vpc resource
+  access_ip        = var.access_ip
   public_sn_count  = 2
   private_sn_count = 3
   max_subnets      = 20

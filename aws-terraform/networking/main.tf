@@ -97,3 +97,25 @@ resource "aws_default_route_table" "my_private_route_table" {
   }
 }
 
+# Create Security Groups.
+resource "aws_security_group" "my_sg" {
+  tags = {
+    Name = "public_sg"
+  }
+  # name        = "public_sg" # Second way assigning a name to SG but tags above is preferred for interprice.
+  description = "Security group for Public Access"
+  vpc_id      = aws_vpc.my_vpc.id
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.access_ip]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
