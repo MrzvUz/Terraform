@@ -16,6 +16,10 @@ resource "aws_vpc" "my_vpc" {
   tags = {
     Name = "my_vpc - ${random_integer.random.id}"
   }
+  # Lifecycle policy creates new vpc before destroying it so IGW can reassociate to new VPC.
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # 3. Randomly shuffles AZs and randomly assignes AZ to a subnet so we don't have to hard code. It also eliminates max count error of AZs.
