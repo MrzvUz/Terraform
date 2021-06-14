@@ -120,3 +120,13 @@ resource "aws_security_group" "my_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+# Create RDS subnet.
+resource "aws_db_subnet_group" "my_rds_subnetgroup" {
+  count      = var.db_subnet_group == true ? 1 : 0
+  name       = "my_rds_subnetgroup"
+  subnet_ids = aws_subnet.my_private_subnet.*.id
+  tags = {
+    Name = "my_rds_sng"
+  }
+}
