@@ -13,16 +13,22 @@ module "networking" {               # referencing to ./networking/main.tf
   db_subnet_group  = true
 }
 
-module "database" {
-  source                 = "./database"
-  db_storage             = 10
-  db_engine_version      = "5.7.22"
-  db_instance_class      = "db.t2.micro"
-  dbname                 = var.dbname
-  dbuser                 = var.dbuser
-  dbpassword             = var.dbpassword
-  db_identifier          = "my-db"
-  skip_final_snapshot    = true
-  db_subnet_group_name   = module.networking.db_subnet_group_name[0]
-  vpc_security_group_ids = module.networking.db_security_group
+# module "database" {
+#   source                 = "./database"
+#   db_storage             = 10
+#   db_engine_version      = "5.7.22"
+#   db_instance_class      = "db.t2.micro"
+#   dbname                 = var.dbname
+#   dbuser                 = var.dbuser
+#   dbpassword             = var.dbpassword
+#   db_identifier          = "my-db"
+#   skip_final_snapshot    = true
+#   db_subnet_group_name   = module.networking.db_subnet_group_name[0]
+#   vpc_security_group_ids = module.networking.db_security_group
+# }
+
+module "loadbalancing" {
+  source         = "./loadbalancing"
+  public_subnets = module.networking.public_subnets
+  public_sg      = module.networking.public_sg
 }
