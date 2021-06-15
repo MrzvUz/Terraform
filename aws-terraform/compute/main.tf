@@ -31,13 +31,12 @@ resource "aws_instance" "my_node" {
     Name = "my_node-${random_id.my_node_id[count.index].dec}"
   }
 
-
   key_name               = aws_key_pair.my_auth.id
   vpc_security_group_ids = [var.public_sg]
   subnet_id              = var.public_subnets[count.index]
   user_data = templatefile(var.user_data_path,
     {
-      nodename    = "my_node-${random_id.my_node_id[count.index].dec}"
+      nodename    = "my-${random_id.my_node_id[count.index].dec}"
       db_endpoint = var.db_endpoint
       dbuser      = var.dbuser
       dbpassword  = var.dbpassword
@@ -47,4 +46,14 @@ resource "aws_instance" "my_node" {
   root_block_device {
     volume_size = var.vol_size # 10
   }
+  provisioner "local-exec" {
+    command = templatefile("${path.cmd}/scp_script.tpl")
+  }
+}
+
+resource "aws_lb_target_group_attachment" "my_tg_attach" {
+  count            = var.instance_count
+  target_group_arn = var.lb_target_group_arn
+  target_id        = aws_instance.my_node[count.index].id
+  port             = var.tg_port
 }

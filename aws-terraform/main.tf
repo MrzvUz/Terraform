@@ -31,7 +31,7 @@ module "loadbalancing" {
   source                 = "./loadbalancing"
   public_subnets         = module.networking.public_subnets
   public_sg              = module.networking.public_sg
-  tg_port                = 80
+  tg_port                = 8000
   tg_protocol            = "HTTP"
   vpc_id                 = module.networking.vpc_id
   lb_healthy_threshold   = 2
@@ -43,18 +43,20 @@ module "loadbalancing" {
 }
 
 module "compute" {
-  source          = "./compute"
-  public_subnets  = module.networking.public_subnets
-  public_sg       = module.networking.public_sg
-  instance_count  = 1
-  instance_type   = "t3.micro"
-  vol_size        = 10
-  key_name        = "mykey"
-  public_key_path = "/home/ubuntu/.ssh/mykey.pub"
-  user_data_path  = "${path.root}/userdata.tpl"
-  db_endpoint     = module.database.db_endpoint
-  dbname          = var.dbname
-  dbuser          = var.dbuser
-  dbpassword      = var.dbpassword
+  source              = "./compute"
+  public_subnets      = module.networking.public_subnets
+  public_sg           = module.networking.public_sg
+  instance_count      = 1
+  instance_type       = "t3.micro"
+  vol_size            = 10
+  key_name            = "mykey"
+  public_key_path     = "/home/ubuntu/.ssh/mykey.pub"
+  user_data_path      = "${path.root}/userdata.tpl"
+  db_endpoint         = module.database.db_endpoint
+  dbname              = var.dbname
+  dbuser              = var.dbuser
+  dbpassword          = var.dbpassword
+  lb_target_group_arn = module.loadbalancing.lb_target_group_arn
+  tg_port             = 8000
 }
 

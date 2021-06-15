@@ -1,6 +1,6 @@
 # --- database/main.tf ---
 
-resource "aws_db_instance" "my-db" {
+resource "aws_db_instance" "my_db" {
   allocated_storage      = var.db_storage
   engine                 = "mysql"
   engine_version         = var.db_engine_version
