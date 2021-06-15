@@ -28,7 +28,15 @@ module "networking" {               # referencing to ./networking/main.tf
 # }
 
 module "loadbalancing" {
-  source         = "./loadbalancing"
-  public_subnets = module.networking.public_subnets
-  public_sg      = module.networking.public_sg
+  source                 = "./loadbalancing"
+  public_subnets         = module.networking.public_subnets
+  public_sg              = module.networking.public_sg
+  tg_port                = 80
+  tg_protocol            = "HTTP"
+  vpc_id                 = module.networking.vpc_id
+  lb_healthy_threshold   = 2
+  lb_unhealthy_threshold = 2
+  lb_timeout             = 3
+  lb_interval            = 30
 }
+
